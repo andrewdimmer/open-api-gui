@@ -5,8 +5,8 @@ declare namespace OpenApi {
     info: InfoObject;
     jsonSchemaDialect?: string;
     servers?: ServerObject[];
-    paths: PathsObject;
-    webhooks: { [key: string]: PathItemObject | ReferenceObject };
+    paths?: PathsObject;
+    webhooks?: { [key: string]: PathItemObject | ReferenceObject };
     components?: ComponentsObject;
     security?: SecurityRequirementObject[];
     tags?: TagObject[];
@@ -319,3 +319,5 @@ declare namespace OpenApi {
 
   type SecurityRequirementObject = { [key: string]: string[] };
 }
+
+export default OpenApi;
