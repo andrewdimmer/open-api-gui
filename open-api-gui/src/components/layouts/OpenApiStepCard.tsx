@@ -57,7 +57,7 @@ const OpenApiStepCard: React.FunctionComponent<OpenApiStepCardProps> = ({
   return (
     <Fragment>
       <Card className={classes.marginedPadded}>
-        <Typography variant="h4" className={classes.pageTitle}>
+        <Typography variant="h3" className={classes.pageTitle}>
           {openApiSteps[stepNumber]}
         </Typography>
         <Typography>{stepDescription}</Typography>

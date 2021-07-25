@@ -17,7 +17,7 @@ const ErrorPage: React.FunctionComponent<ErrorPageProps> = ({
       <Typography variant="h3">
         Error{errorCode !== undefined ? ` ${errorCode}` : ""}!
       </Typography>
-      <Typography variant="h4">{errorMessage}</Typography>
+      <Typography variant="h3">{errorMessage}</Typography>
       {errorDescription && (
         <Typography variant="body1">{errorDescription}</Typography>
       )}

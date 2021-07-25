@@ -10,7 +10,7 @@ const Home: React.FunctionComponent = () => {
 
   return (
     <Card className={classes.marginedPadded}>
-      <Typography variant="h4" className={classes.pageTitle}>
+      <Typography variant="h3" className={classes.pageTitle}>
         Welcome to OpenAPI Gui
       </Typography>
 
