@@ -1,6 +1,6 @@
 import { Button, Card, Container, Grid, Typography } from "@material-ui/core";
 import React, { Fragment } from "react";
-import { openApiSteps, stepNumberToRoute } from "../../data/openApiSteps";
+import { openApiSteps, stepNumberToRoute } from "../../data/openApiData";
 import { styles } from "../../styles";
 import { useHistory } from "react-router";
 

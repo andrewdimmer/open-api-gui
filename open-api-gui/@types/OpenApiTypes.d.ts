@@ -3,9 +3,9 @@ declare namespace OpenApi {
   interface Object {
     openapi: string;
     info: InfoObject;
-    jsonSchemaDialect?: string;
+    jsonSchemaDialect?: string; // Not supported in 3.0.3
     servers?: ServerObject[];
-    paths?: PathsObject;
+    paths?: PathsObject; // Required in 3.0.3
     webhooks?: { [key: string]: PathItemObject | ReferenceObject };
     components?: ComponentsObject;
     security?: SecurityRequirementObject[];
@@ -15,7 +15,7 @@ declare namespace OpenApi {
 
   interface InfoObject {
     title: string;
-    summary?: string;
+    summary?: string; // Not supported in 3.0.3
     description?: string;
     termsOfService?: string;
     contact?: ContactObject;
@@ -31,7 +31,7 @@ declare namespace OpenApi {
 
   interface LicenseObject {
     name: string;
-    identifier?: string;
+    identifier?: string; // Not supported in 3.0.3
     url?: string;
   }
 

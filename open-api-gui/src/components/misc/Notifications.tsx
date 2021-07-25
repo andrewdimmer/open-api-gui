@@ -116,12 +116,19 @@ export default function NotificationBar({
   notification,
   setNotification,
 }: MessageProps) {
+  const [displayNotification, setDisplayNotification] =
+    React.useState<NotificationMessageInterface>({ type: "info", message: "" });
+
   const handleClose = (event?: SyntheticEvent, reason?: string) => {
     if (reason === "clickaway") {
       return;
     }
     setNotification(null);
   };
+
+  if (notification && notification !== displayNotification) {
+    setDisplayNotification(notification);
+  }
 
   return (
     <div>
@@ -136,8 +143,8 @@ export default function NotificationBar({
       >
         <MySnackbarContentWrapper
           onClose={handleClose}
-          variant={notification?.type || "info"}
-          message={notification?.message}
+          variant={displayNotification.type}
+          message={displayNotification.message}
         />
       </Snackbar>
     </div>
