@@ -1,7 +1,7 @@
 import { Button, Card, Typography } from "@material-ui/core";
 import React from "react";
 import { useHistory } from "react-router";
-import { stepNumberToRoute } from "../../data/openApiSteps";
+import { stepNumberToRoute } from "../../data/openApiData";
 import { styles } from "../../styles";
 
 const Home: React.FunctionComponent = () => {
@@ -10,8 +10,8 @@ const Home: React.FunctionComponent = () => {
 
   return (
     <Card className={classes.marginedPadded}>
-      <Typography variant="h4" className={classes.pageTitle}>
-        Welcome to OpenAPI Gui
+      <Typography variant="h3" className={classes.pageTitle}>
+        Welcome to OpenAPI GUI
       </Typography>
 
       <Button

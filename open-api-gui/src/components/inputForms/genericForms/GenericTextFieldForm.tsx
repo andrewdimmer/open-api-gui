@@ -14,6 +14,7 @@ const GenericTextFieldForm: React.FunctionComponent<TextFieldFormProps<any>> =
     headingVariant = "h5",
     heading,
     description,
+    notes,
     label = heading,
     value,
     setValue,
@@ -29,6 +30,10 @@ const GenericTextFieldForm: React.FunctionComponent<TextFieldFormProps<any>> =
       <Fragment>
         <Typography variant={headingVariant}>{heading}</Typography>
         <Typography>{description}</Typography>
+        {notes &&
+          notes.map((note, index) => {
+            return note;
+          })}
         <TextField
           className={classes.marginedTopBottom}
           error={error}

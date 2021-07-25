@@ -4,13 +4,18 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import OpenApi from "../@types/OpenApiTypes";
 import NavBar from "./components/layouts/NavBar";
 import BugReportFab from "./components/misc/BugReportFab";
+import NotificationBar, {
+  NotificationMessage,
+} from "./components/misc/Notifications";
 import OpenApiConfiguration from "./components/openApiSections/OpenApiConfiguration";
 import OpenApiInfo from "./components/openApiSections/OpenApiInfo";
-import OpenApiSpecificationImportExport from "./components/openApiSections/OpenApiSpecificationImport";
+import OpenApiServers from "./components/openApiSections/OpenApiServers";
+import OpenApiSpecificationImportExport from "./components/openApiSections/OpenApiSpecificationImportExport";
 import Error404Page from "./components/pages/Error404Page";
 import Home from "./components/pages/Home";
-import { openApiSteps, stepNumberToRoute } from "./data/openApiSteps";
+import { openApiSteps, stepNumberToRoute } from "./data/openApiData";
 import { generateOpenApiInitialObject } from "./helpers/openApiInitialObject";
+import { convertOpenApiSpecification } from "./helpers/openApiVersionConverter";
 import { styles } from "./styles";
 
 declare interface AppProps {
@@ -21,11 +26,21 @@ declare interface AppProps {
 const App: React.FunctionComponent<AppProps> = ({ theme, toggleTheme }) => {
   const classes = styles();
 
+  const [notification, setNotification] =
+    React.useState<NotificationMessage>(null);
+
   const [openApiSpecification, setOpenApiSpecification] =
     React.useState<OpenApi.Object>(generateOpenApiInitialObject());
 
   const setOpenapi = (openapi: string) => {
-    setOpenApiSpecification({ ...openApiSpecification, openapi });
+    if (openApiSpecification.openapi !== openapi) {
+      const newSpecificationAndStatus = convertOpenApiSpecification(
+        { ...openApiSpecification, openapi },
+        openapi
+      );
+      setNotification(newSpecificationAndStatus.status);
+      setOpenApiSpecification(newSpecificationAndStatus.newSpecification);
+    }
   };
 
   const setJsonSchemaDialect = (jsonSchemaDialect: string) => {
@@ -61,7 +76,11 @@ const App: React.FunctionComponent<AppProps> = ({ theme, toggleTheme }) => {
           </Route>
           <Route path={`/${stepNumberToRoute(2)}`} exact>
             {openApiSpecification.info !== undefined ? (
-              <OpenApiInfo info={openApiSpecification.info} setInfo={setInfo} />
+              <OpenApiInfo
+                openapi={openApiSpecification.openapi}
+                info={openApiSpecification.info}
+                setInfo={setInfo}
+              />
             ) : (
               () => {
                 // Repair bad starting JSON that is allowable when importing `{}`
@@ -75,11 +94,16 @@ const App: React.FunctionComponent<AppProps> = ({ theme, toggleTheme }) => {
               openApiSpecification={openApiSpecification}
               setOpenApiSpecification={setOpenApiSpecification}
               operation="export"
+              setOpenapi={setOpenapi}
             />
           </Route>
           <Route component={Error404Page} />
         </Switch>
       </Container>
+      <NotificationBar
+        notification={notification}
+        setNotification={setNotification}
+      />
       <BugReportFab />
     </Router>
   );

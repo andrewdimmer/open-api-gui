@@ -10,6 +10,7 @@ const MarkdownTextFieldForm: React.FunctionComponent<
   headingVariant = "h5",
   heading,
   description,
+  notes,
   label = heading,
   value,
   setValue,
@@ -20,6 +21,10 @@ const MarkdownTextFieldForm: React.FunctionComponent<
     <Fragment>
       <Typography variant={headingVariant}>{heading}</Typography>
       <Typography>{description}</Typography>
+      {notes &&
+        notes.map((note, index) => {
+          return note;
+        })}
       <MarkdownPreviewTextField
         className={classes.marginedTopBottom}
         markdown={value}

@@ -9,6 +9,7 @@ const StringDropdownSelectionForm: React.FunctionComponent<
   headingVariant,
   heading,
   description,
+  notes,
   label,
   value,
   setValue,
@@ -21,6 +22,7 @@ const StringDropdownSelectionForm: React.FunctionComponent<
       headingVariant={headingVariant}
       heading={heading}
       description={description}
+      notes={notes}
       label={label}
       value={value}
       setValue={setValue}

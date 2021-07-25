@@ -8,6 +8,7 @@ const StringTextFieldForm: React.FunctionComponent<TextFieldFormProps<string>> =
     headingVariant,
     heading,
     description,
+    notes,
     label,
     value,
     setValue,
@@ -20,6 +21,7 @@ const StringTextFieldForm: React.FunctionComponent<TextFieldFormProps<string>> =
         headingVariant={headingVariant}
         heading={heading}
         description={description}
+        notes={notes}
         label={label}
         value={value}
         setValue={setValue}

@@ -15,6 +15,7 @@ const GenericDropdownSelectionForm: React.FunctionComponent<
   headingVariant = "h5",
   heading,
   description,
+  notes,
   label = heading,
   value,
   setValue,
@@ -30,6 +31,10 @@ const GenericDropdownSelectionForm: React.FunctionComponent<
     <Fragment>
       <Typography variant={headingVariant}>{heading}</Typography>
       <Typography>{description}</Typography>
+      {notes &&
+        notes.map((note, index) => {
+          return note;
+        })}
       <TextField
         className={classes.marginedTopBottom}
         error={error}

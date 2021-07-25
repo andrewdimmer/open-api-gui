@@ -3,22 +3,43 @@ import { Error } from "@material-ui/icons";
 import React, { Fragment } from "react";
 import ReactMarkdown from "react-markdown";
 import OpenApi from "../../../@types/OpenApiTypes";
-import { openApiSteps } from "../../data/openApiSteps";
+import { openApiSteps } from "../../data/openApiData";
+import { styles } from "../../styles";
 import OpenApiStepCard from "../layouts/OpenApiStepCard";
 import { markdownSyntaxHighlightingComponents } from "../misc/MarkdownPreviewTextField";
+import { GenericErrorMessage, HelpfulHint } from "../misc/NoteTemplates";
+import OpenApiSpecificationVersionUi from "../openApiObjectUis/OpenApiSpecificationVersionUi";
 
 declare interface OpenApiSpecificationImportExportProps {
   openApiSpecification: OpenApi.Object;
   setOpenApiSpecification: (openApiSpecification: OpenApi.Object) => void;
   operation: "import" | "export";
+  setOpenapi?: (openapi: string) => void;
 }
 
 const OpenApiSpecificationImportExport: React.FunctionComponent<OpenApiSpecificationImportExportProps> =
-  ({ openApiSpecification, setOpenApiSpecification, operation }) => {
+  ({
+    openApiSpecification,
+    setOpenApiSpecification,
+    operation,
+    setOpenapi,
+  }) => {
+    const classes = styles();
+
     const [editValue, setEditValue] = React.useState<string>(
       JSON.stringify(openApiSpecification, null, 2)
     );
     const [isValidJson, setIsValidJson] = React.useState<boolean>(true);
+    const [isUpToDate, setIsUpToDate] = React.useState<boolean>(true);
+
+    const loadEditValueFromOpenApiSpecification = () => {
+      setEditValue(JSON.stringify(openApiSpecification, null, 2));
+    };
+
+    if (!isUpToDate) {
+      setIsUpToDate(true);
+      loadEditValueFromOpenApiSpecification();
+    }
 
     return (
       <OpenApiStepCard
@@ -40,16 +61,22 @@ const OpenApiSpecificationImportExport: React.FunctionComponent<OpenApiSpecifica
               <br />
               If you don't already have an OpenAPI Specification, that's fine as
               well! Just click "Next" to get started building one!
-              <br />
-              <br />
             </Fragment>
           ) : (
             <Fragment>
-              {" "}
               Copy and paste the below OpenAPI Specification to wherever you are
-              going to use it. If you're not already familiar with how to
-              generate documentation, clients, and servers from the below
-              OpenAPI Specification, check out{" "}
+              going to use it.
+            </Fragment>
+          )
+        }
+        canAdvanceToNextStep={isValidJson}
+      >
+        {operation === "export" && (
+          <Fragment>
+            <HelpfulHint>
+              If you're not already familiar with how to generate documentation,
+              clients, and servers from the below OpenAPI Specification, check
+              out{" "}
               <a
                 href="https://editor.swagger.io"
                 target="_blank"
@@ -58,20 +85,20 @@ const OpenApiSpecificationImportExport: React.FunctionComponent<OpenApiSpecifica
                 editor.swagger.io
               </a>
               .
-              <br />
-              <br />
+            </HelpfulHint>
+            <HelpfulHint>
               If you want to make any edits the the JSON below, feel free to do
               that as well. If you head back into the OpenAPI GUI by clicking
               "Previous" or "Home" then "Get Started!", the new values you've
               edited here will be ready for you in the GUI as well.
-              <br />
-              <br />
-            </Fragment>
-          )
-        }
-        canAdvanceToNextStep={isValidJson}
-      >
-        <Grid container spacing={2}>
+            </HelpfulHint>
+            <HelpfulHint>
+              Looking to change the OpenAPI Specification Version to use another
+              external tool? You can adjust that at the bottom of this page!
+            </HelpfulHint>
+          </Fragment>
+        )}
+        <Grid container spacing={2} className={classes.marginedTopBottom}>
           <Grid item xs={6}>
             <Typography variant="caption">Edit:</Typography>
             <TextField
@@ -81,8 +108,8 @@ const OpenApiSpecificationImportExport: React.FunctionComponent<OpenApiSpecifica
                 !isValidJson && (
                   <Fragment>
                     <Error fontSize="inherit" /> Please ensure that you enter a
-                    valid JSON OpenAPI Schema. If you don't already have one,
-                    you can get started with just "<code>{"{}"}</code>".
+                    valid JSON OpenAPI Specification. If you don't already have
+                    one, you can get started with just "<code>{"{}"}</code>".
                   </Fragment>
                 )
               }
@@ -122,7 +149,7 @@ const OpenApiSpecificationImportExport: React.FunctionComponent<OpenApiSpecifica
                 color="primary"
                 disabled={!isValidJson}
                 onClick={() => {
-                  setEditValue(JSON.stringify(openApiSpecification, null, 2));
+                  loadEditValueFromOpenApiSpecification();
                 }}
                 variant="outlined"
               >
@@ -131,6 +158,22 @@ const OpenApiSpecificationImportExport: React.FunctionComponent<OpenApiSpecifica
             </Grid>
           </Grid>
         </Grid>
+
+        {setOpenapi &&
+          (isValidJson ? (
+            <OpenApiSpecificationVersionUi
+              openapi={openApiSpecification.openapi}
+              setOpenapi={(openapi) => {
+                setOpenapi(openapi);
+                setIsUpToDate(false);
+              }}
+            />
+          ) : (
+            <GenericErrorMessage prefix="Warning: ">
+              You can only change the OpenAPI Specification Version when there
+              is a valid JSON OpenAPI Specification
+            </GenericErrorMessage>
+          ))}
       </OpenApiStepCard>
     );
   };

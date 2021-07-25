@@ -8,6 +8,7 @@ const NumberTextFieldForm: React.FunctionComponent<
   headingVariant,
   heading,
   description,
+  notes,
   label,
   value,
   setValue,
@@ -19,6 +20,7 @@ const NumberTextFieldForm: React.FunctionComponent<
       headingVariant={headingVariant}
       heading={heading}
       description={description}
+      notes={notes}
       label={label}
       value={value}
       setValue={setValue}

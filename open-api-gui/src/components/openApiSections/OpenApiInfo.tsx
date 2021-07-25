@@ -9,22 +9,36 @@ import {
 import React, { Fragment } from "react";
 import OpenApi from "../../../@types/OpenApiTypes";
 import { openSourceLicenseList } from "../../data/openSourceLicenseList";
+import {
+  clearLicenseDataLoss,
+  isLicenseDataLoss,
+} from "../../helpers/openApiVersionConverter";
 import { validEmail, validUrl } from "../../helpers/stringValidators";
 import NumberDropdownSelectionForm from "../inputForms/numberForms/NumberDropdownSelectionForm";
 import MarkdownTextFieldForm from "../inputForms/stringForms/MardownTextFieldForm";
 import StringTextFieldForm from "../inputForms/stringForms/StringTextFieldForm";
 import OpenApiStepCard from "../layouts/OpenApiStepCard";
+import {
+  DataLossDuringConversion,
+  HelpfulHint,
+  NewInOpenApi3_1_0,
+  NewInOpenApi3_1_0_LossOfInfoIfNeedOpenAoi3_0_3,
+} from "../misc/NoteTemplates";
 
 declare interface OpenApiInfoProps {
+  openapi: string;
   info: OpenApi.InfoObject;
   setInfo: (info: OpenApi.InfoObject) => void;
 }
 
 const OpenApiInfo: React.FunctionComponent<OpenApiInfoProps> = ({
+  openapi,
   info,
   setInfo,
 }) => {
-  const getLicenseIndexFromLicense = (license?: OpenApi.LicenseObject) => {
+  const getLicenseIndexFromLicense = (
+    license: OpenApi.LicenseObject | undefined
+  ) => {
     if (!license) {
       return -1;
     } else {
@@ -77,7 +91,7 @@ const OpenApiInfo: React.FunctionComponent<OpenApiInfoProps> = ({
     setInfo({ ...info, termsOfService: termsOfService || undefined });
   };
 
-  const setContact = (contact?: OpenApi.ContactObject) => {
+  const setContact = (contact: OpenApi.ContactObject | undefined) => {
     const hasContent =
       contact && (contact.name || contact.url || contact.email);
     setInfo({ ...info, contact: hasContent ? contact : undefined });
@@ -98,10 +112,11 @@ const OpenApiInfo: React.FunctionComponent<OpenApiInfoProps> = ({
     setContact({ ...newContact, email: contactEmail || undefined });
   };
 
-  const setLicense = (license?: OpenApi.LicenseObject) => {
+  const setLicense = (license: OpenApi.LicenseObject | undefined) => {
     const hasContent =
       license && (license.name || license.identifier || license.url);
     setInfo({ ...info, license: hasContent ? license : undefined });
+    clearLicenseDataLoss();
   };
 
   const setLicenseIfSelected = (licenseIndex: number) => {
@@ -158,13 +173,16 @@ const OpenApiInfo: React.FunctionComponent<OpenApiInfoProps> = ({
         errorHelperText="API Title is required"
       />
 
-      {/* info.summary */}
-      <StringTextFieldForm
-        heading="API Summary"
-        description="A short summary of the API."
-        value={info.summary || ""}
-        setValue={setSummary}
-      />
+      {/* info.summary ---> Not supported in 3.0.3*/}
+      {openapi === "3.1.0" && (
+        <StringTextFieldForm
+          heading="API Summary"
+          description="A short summary of the API."
+          notes={[<NewInOpenApi3_1_0 />]}
+          value={info.summary || ""}
+          setValue={setSummary}
+        />
+      )}
 
       {/* info.description */}
       <MarkdownTextFieldForm
@@ -273,41 +291,43 @@ const OpenApiInfo: React.FunctionComponent<OpenApiInfoProps> = ({
             error={!info.license?.name}
             errorHelperText="License Name is required"
           />
-          <FormControl component="fieldset">
-            <FormLabel component="legend">
-              Define a license by its URL or its identifier:
-            </FormLabel>
-            <RadioGroup
-              row
-              name="license-url-or-identifier"
-              value={licenseUrlOrIdentifier}
-              onChange={(event) => {
-                const licenseUrlOrIdentifier = (
-                  event.target as HTMLInputElement
-                ).value as "identifier" | "url";
-                if (licenseUrlOrIdentifier === "identifier") {
-                  setLicenseUrl("");
-                } else {
-                  setLicenseIdentifier("");
-                }
-                setLicenseUrlOrIdentifier(licenseUrlOrIdentifier);
-              }}
-            >
-              <FormControlLabel
-                value="url"
-                control={<Radio color="primary" />}
-                label="URL"
-              />
-              <FormControlLabel
-                value="identifier"
-                control={<Radio color="primary" />}
-                label="Identifier"
-              />
-            </RadioGroup>
-          </FormControl>
-          {licenseUrlOrIdentifier === "identifier" ? (
+          {/* info.licence.identifier ---> Not supported in 3.0.3*/}
+          {openapi === "3.1.0" && (
+            <FormControl component="fieldset">
+              <FormLabel component="legend">
+                Define a license by its URL or its identifier:
+              </FormLabel>
+              <RadioGroup
+                row
+                name="license-url-or-identifier"
+                value={licenseUrlOrIdentifier}
+                onChange={(event) => {
+                  const licenseUrlOrIdentifier = (
+                    event.target as HTMLInputElement
+                  ).value as "identifier" | "url";
+                  if (licenseUrlOrIdentifier === "identifier") {
+                    setLicenseUrl("");
+                  } else {
+                    setLicenseIdentifier("");
+                  }
+                  setLicenseUrlOrIdentifier(licenseUrlOrIdentifier);
+                }}
+              >
+                <FormControlLabel
+                  value="url"
+                  control={<Radio color="primary" />}
+                  label="URL"
+                />
+                <FormControlLabel
+                  value="identifier"
+                  control={<Radio color="primary" />}
+                  label="Identifier"
+                />
+              </RadioGroup>
+            </FormControl>
+          )}
+          {openapi === "3.1.0" && licenseUrlOrIdentifier === "identifier" ? (
             <Fragment>
-              {/* info.licence.identifier */}
               <StringTextFieldForm
                 headingVariant="h6"
                 heading="License Identifier"
@@ -325,6 +345,14 @@ const OpenApiInfo: React.FunctionComponent<OpenApiInfoProps> = ({
                     exclusive of the License URL.
                   </Fragment>
                 }
+                notes={[
+                  <NewInOpenApi3_1_0_LossOfInfoIfNeedOpenAoi3_0_3>
+                    Using the License Identifier may result in loss of data when
+                    converting from OpenAPI 3.1.0 to OpenAPI 3.0.3. If you still
+                    rely on tools that require OpenAPI 3.0.3, it is recommended
+                    you use the License URL instead.
+                  </NewInOpenApi3_1_0_LossOfInfoIfNeedOpenAoi3_0_3>,
+                ]}
                 value={info.license?.identifier || ""}
                 setValue={setLicenseIdentifier}
               />
@@ -336,6 +364,22 @@ const OpenApiInfo: React.FunctionComponent<OpenApiInfoProps> = ({
                 headingVariant="h6"
                 heading="License URL"
                 description="A URL to the license used for the API. This MUST be in the form of a URL. The License URL is mutually exclusive of the License Identifier."
+                notes={
+                  isLicenseDataLoss()
+                    ? [
+                        <DataLossDuringConversion>
+                          During the convesion from OpenAPI 3.1.0 to OpenAPI
+                          3.0.3, it was detected that information in the License
+                          Identifier was lost. You can either restore this data
+                          by converting back to OpenAPI 3.1.0, or you can edit
+                          the license information listed here. If you edit the
+                          license information listed here, the new information
+                          will be carried forward to OpenAPI 3.1.0 if you ever
+                          upgrade it again.
+                        </DataLossDuringConversion>,
+                      ]
+                    : []
+                }
                 value={info.license?.url || ""}
                 setValue={setLicenseUrl}
                 error={!!info.license?.url && !validUrl(info.license.url)}
@@ -354,8 +398,11 @@ const OpenApiInfo: React.FunctionComponent<OpenApiInfoProps> = ({
           <Fragment>
             <strong>REQUIRED.</strong> The version of the OpenAPI document
             (which is distinct from the OpenAPI Specification version or the API
-            implementation version). <br />
-            <br />
+            implementation version).
+          </Fragment>
+        }
+        notes={[
+          <HelpfulHint>
             Helpful Hint to New Hackers: When in doubt for creating a version
             number, it is generally pretty safe to default to{" "}
             <a
@@ -367,8 +414,8 @@ const OpenApiInfo: React.FunctionComponent<OpenApiInfoProps> = ({
             </a>
             . If you haven't already learned about this, now is a great time to
             check it out!
-          </Fragment>
-        }
+          </HelpfulHint>,
+        ]}
         value={info.version}
         setValue={setVersion}
         error={!info.version}

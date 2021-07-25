@@ -23,6 +23,18 @@ export const styles = makeStyles((theme: Theme) =>
       textAlign: "center",
       marginBottom: theme.spacing(2),
     },
+    hintIcon: {
+      fill: theme.palette.success.main,
+    },
+    infoIcon: {
+      fill: theme.palette.info.main,
+    },
+    warningIcon: {
+      fill: theme.palette.warning.main,
+    },
+    errorIcon: {
+      fill: theme.palette.error.main,
+    },
   })
 );
 

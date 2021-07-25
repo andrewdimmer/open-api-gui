@@ -12,6 +12,7 @@ const BooleanDropdownSelectionForm: React.FunctionComponent<BooleanDropdownSelec
     headingVariant,
     heading,
     description,
+    notes,
     label,
     value,
     setValue,
@@ -37,6 +38,7 @@ const BooleanDropdownSelectionForm: React.FunctionComponent<BooleanDropdownSelec
         headingVariant={headingVariant}
         heading={heading}
         description={description}
+        notes={notes}
         label={label}
         value={value}
         setValue={setValue}
