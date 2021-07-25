@@ -4,6 +4,9 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import OpenApi from "../@types/OpenApiTypes";
 import NavBar from "./components/layouts/NavBar";
 import BugReportFab from "./components/misc/BugReportFab";
+import NotificationBar, {
+  NotificationMessage,
+} from "./components/misc/Notifications";
 import OpenApiConfiguration from "./components/openApiSections/OpenApiConfiguration";
 import OpenApiInfo from "./components/openApiSections/OpenApiInfo";
 import OpenApiSpecificationImportExport from "./components/openApiSections/OpenApiSpecificationImport";
@@ -20,6 +23,9 @@ declare interface AppProps {
 
 const App: React.FunctionComponent<AppProps> = ({ theme, toggleTheme }) => {
   const classes = styles();
+
+  const [notification, setNotification] =
+    React.useState<NotificationMessage>(null);
 
   const [openApiSpecification, setOpenApiSpecification] =
     React.useState<OpenApi.Object>(generateOpenApiInitialObject());
@@ -80,6 +86,10 @@ const App: React.FunctionComponent<AppProps> = ({ theme, toggleTheme }) => {
           <Route component={Error404Page} />
         </Switch>
       </Container>
+      <NotificationBar
+        notification={notification}
+        setNotification={setNotification}
+      />
       <BugReportFab />
     </Router>
   );
